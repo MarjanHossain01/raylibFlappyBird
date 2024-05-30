@@ -1,20 +1,19 @@
 #include "raylib.h"
 #include <stdio.h>
-#include <time.h>
 
 const int width = 800;
 const int height = 600;
 
 bool death = false;
-
+ 
 // Bird Properties:
-typedef struct Bird {
-    float width;
-    float height;
-    Vector2 position;
-    Vector2 velocity;
-    Texture2D Texture;
-} Bird;
+typedef struct Bird { 
+    float width; 
+    float height; 
+    Vector2 position; 
+    Vector2 velocity; 
+    Texture2D Texture; 
+} Bird; 
 
 Bird bird = {
     .width = 34,
@@ -40,7 +39,7 @@ typedef struct Button {
 } Button;
 
 struct Button Retry = {
-    .rect = {width/2-125, height/2+50, 130, 50},
+    .rect = {width/2-125, height/2+50, 130, 50, RED},
     .color = RED,
     .textcolor = RAYWHITE,
     .text = "Retry"
@@ -157,6 +156,17 @@ int scoreUpdate(Platform Top_platforms[], int* score)
     return *score;
 }
 
+int highScore(int *score, int* highscore)
+{
+    if((*score) > (*highscore))
+    {
+        (*highscore) = (*score);
+    }
+    char scoreText[20]; //Display score
+    snprintf(scoreText, 20, "High Score: %d", *highscore);
+    DrawText(scoreText, 25, 90, 30, RAYWHITE);
+}
+
 int gameOver(Platform Top_platforms[], Platform Bottom_platforms[], int* score) {
     bird.velocity = (Vector2){0, 0}; // Stop bird from moving
     death = true;
@@ -202,6 +212,7 @@ int main() {
     InitAudioDevice();
     
     int score = 0;
+    int highscore = 0;
     
     //Initializing Platforms
     Platform Top_platforms[4];
@@ -223,7 +234,7 @@ int main() {
     Sound jump = LoadSound("F:\\Code\\Project\\RaylibBallGame\\assets\\boom.mp3");
     bird.Texture = LoadTexture("F:\\Code\\Project\\RaylibBallGame\\assets\\bird.png");
     
-    // Draw the main menu once to display buttons
+    // Draw the main menu to display buttons
     int startGame = mainMenu();
     
     SetTargetFPS(60);
@@ -233,7 +244,7 @@ int main() {
         DrawTexture(background, 0, 0, RAYWHITE);
         
         if (startGame == 0) {
-            startGame = mainMenu(); // Update startGame based on menu input
+            startGame = mainMenu(); //Wait for user to select an option
         }
         else {
             DrawTexture(bird.Texture, bird.position.x - bird.width/2, bird.position.y - bird.height/2, WHITE);
@@ -242,6 +253,7 @@ int main() {
             collision(Top_platforms, Bottom_platforms);
             
             scoreUpdate(Top_platforms, &score);
+            highScore(&score, &highscore);
             
             // Setting Bird Properties
             bird.position.y += bird.velocity.y; 
@@ -264,3 +276,4 @@ int main() {
     CloseWindow();
     return 0;
 }
+    
