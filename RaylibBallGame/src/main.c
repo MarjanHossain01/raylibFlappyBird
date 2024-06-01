@@ -70,7 +70,7 @@ void exitGame(); //Exit
 
 int mainMenu()
 {
-    Texture2D logo = LoadTexture("F:\\Code\\Project\\RaylibBallGame\\assets\\logo.png");
+    Texture2D logo = LoadTexture("assets\\logo.png");
     DrawTexture(logo, 270, 50, WHITE);
     
     DrawRectangleRec(Play.rect, Play.color);
@@ -230,9 +230,9 @@ int main() {
     }
     
     //Assets
-    Texture2D background = LoadTexture("F:\\Code\\Project\\RaylibBallGame\\assets\\background.png");
-    Sound jump = LoadSound("F:\\Code\\Project\\RaylibBallGame\\assets\\boom.mp3");
-    bird.Texture = LoadTexture("F:\\Code\\Project\\RaylibBallGame\\assets\\bird.png");
+    Texture2D background = LoadTexture("assets\\background.png");
+    Sound jump = LoadSound("assets\\boom.mp3");
+    bird.Texture = LoadTexture("assets\\bird.png");
     
     // Draw the main menu to display buttons
     int startGame = mainMenu();
