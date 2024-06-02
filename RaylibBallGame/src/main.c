@@ -252,15 +252,21 @@ int main() {
     Rectangle exit = {width/2+30, height/2+50, 120, 50};
     Rectangle retry = {width/2-125, height/2+50, 130, 50};
     
-    Sound jump = LoadSound("assets\\boom.mp3");
     bird.Texture = LoadTexture("assets\\bird.png");
+    Sound bgm = LoadSound("assets\\bgm.mp3");
+    Sound jump = LoadSound("assets\\jump.wav");
     
     
     // Draw the main menu to display buttons
     int startGame = mainMenu(exit, play, retry, button);
     
     SetTargetFPS(60);
+    int bgmCount = 0;
     while (!WindowShouldClose()) {
+        if(bgmCount == 0){
+            PlaySound(bgm);
+            bgmCount++;
+        }
         SetMouseCursor(0);
         BeginDrawing();
         ClearBackground(BLUE);
@@ -299,3 +305,4 @@ int main() {
     CloseWindow();
     return 0;
 }
+
