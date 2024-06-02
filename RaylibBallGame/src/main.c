@@ -31,7 +31,7 @@ typedef struct Platform {
     int height;
 } Platform;
 
-typedef struct Button {
+/*typedef struct Button {
     Rectangle rect;
     Color color;
     Color textcolor;
@@ -57,38 +57,46 @@ struct Button Play = {
     .color = RED,
     .textcolor = RAYWHITE,
     .text = "Play"
-};
+};*/
 
 //Function Declarations
-int mainMenu();
+/*int mainMenu();
 void Update_platforms(Platform Top_platforms[], Platform Bottom_platforms[]); //Obstacle generation
 int collision(Platform Top_platforms[], Platform Bottom_platforms[]); //Collision detection
 int scoreUpdate(Platform Top_platforms[], int* score); //Score Function
 int gameOver(Platform Top_platforms[], Platform Bottom_platforms[], int* score); // Game over stage
 void retry(Platform Top_platforms[], Platform Bottom_platforms[]); //Retry
 void exitGame(); //Exit
+*/
 
-int mainMenu()
+int mainMenu(Rectangle exit, Rectangle play, Rectangle retry, Texture2D button)
 {
     Texture2D logo = LoadTexture("assets\\logo.png");
     DrawTexture(logo, 270, 50, WHITE);
     
-    DrawRectangleRec(Play.rect, Play.color);
-        DrawText(Play.text, Play.rect.x + Play.rect.width / 2 - MeasureText(Play.text, 20) / 2,
-        Play.rect.y + Play.rect.height / 2 - 10, 20, Play.textcolor);
+    DrawTexture(button, width/2-125, height/2+50, WHITE);
+    DrawRectangleRec(play, BLANK);
+        DrawText("Play", width/2-90, play.y + play.height / 2 - 10, 20, WHITE);
         
-   DrawRectangleRec(Exit.rect, Exit.color);
-        DrawText(Exit.text, Exit.rect.x + Exit.rect.width / 2 - MeasureText(Exit.text, 20) / 2,
-        Exit.rect.y + Exit.rect.height / 2 - 10, 20, Exit.textcolor);
+   DrawTexture(button, width/2+30, height/2+50, WHITE);
+   DrawRectangleRec(exit, BLANK);
+        DrawText("Exit", width/2+70, exit.y + exit.height / 2 - 10, 20, WHITE);
    
-   if(CheckCollisionPointRec(GetMousePosition(), Play.rect) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+   if( CheckCollisionPointRec(GetMousePosition(), play) )
    {
-       return 1;
+       SetMouseCursor(4);
+       if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
+           return 1;
+       }
    }
    
-   if(CheckCollisionPointRec(GetMousePosition(), Exit.rect) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+   if( CheckCollisionPointRec(GetMousePosition(), exit) )
    {
-       exitGame();
+       SetMouseCursor(4);
+       if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
+           exitGame();
+       }
+       
    }
    return 0;
 }
@@ -167,31 +175,38 @@ int highScore(int *score, int* highscore)
     DrawText(scoreText, 25, 90, 30, RAYWHITE);
 }
 
-int gameOver(Platform Top_platforms[], Platform Bottom_platforms[], int* score) {
+int gameOver(Platform Top_platforms[], Platform Bottom_platforms[], int* score, Rectangle retry, Rectangle exit, Texture2D button) {
     bird.velocity = (Vector2){0, 0}; // Stop bird from moving
     death = true;
     
     DrawText("Game Over!", 250, 250, 62, RAYWHITE);
     {
-        DrawRectangleRec(Retry.rect, Retry.color);
-        DrawText(Retry.text, Retry.rect.x + Retry.rect.width / 2 - MeasureText(Retry.text, 20) / 2, //Text
-        Retry.rect.y + Retry.rect.height / 2 - 10, 20, Retry.textcolor);
-
-        DrawRectangleRec(Exit.rect, Exit.color);
-        DrawText(Exit.text, Exit.rect.x + Exit.rect.width / 2 - MeasureText(Exit.text, 20) / 2,  //Text
-        Exit.rect.y + Exit.rect.height / 2 - 10, 20, Exit.textcolor);
+        DrawTexture(button, width/2-125, height/2+50, WHITE);
+    DrawRectangleRec(retry, BLANK);
+        DrawText("Retry", width/2-95, retry.y + retry.height / 2 - 10, 20, WHITE);
+        
+   DrawTexture(button, width/2+30, height/2+50, WHITE);
+   DrawRectangleRec(exit, BLANK);
+        DrawText("Exit", width/2+70, exit.y + exit.height / 2 - 10, 20, WHITE);
+   
     }
     
-    if (CheckCollisionPointRec(GetMousePosition(), Retry.rect) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
-        *score = 0;
-        retry(Top_platforms, Bottom_platforms);
+    if (CheckCollisionPointRec(GetMousePosition(), retry)){
+        SetMouseCursor(4);
+        if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
+            *score = 0;
+            Retry(Top_platforms, Bottom_platforms);
+        }
     }
-    if (CheckCollisionPointRec(GetMousePosition(), Exit.rect) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
-        exitGame();
+    if (CheckCollisionPointRec(GetMousePosition(), exit)){
+        SetMouseCursor(4);
+        if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
+            exitGame();
+        }
     }
 }
 
-void retry(Platform Top_platforms[], Platform Bottom_platforms[]) {
+void Retry(Platform Top_platforms[], Platform Bottom_platforms[]) {
     bird.position.x = width / 2;
     bird.position.y = height / 2;
     death = false;
@@ -231,20 +246,28 @@ int main() {
     
     //Assets
     Texture2D background = LoadTexture("assets\\background.png");
+    Texture2D button = LoadTexture("assets\\Texture.png");
+    
+    Rectangle play = {width/2-125, height/2+50, 130, 50};
+    Rectangle exit = {width/2+30, height/2+50, 120, 50};
+    Rectangle retry = {width/2-125, height/2+50, 130, 50};
+    
     Sound jump = LoadSound("assets\\boom.mp3");
     bird.Texture = LoadTexture("assets\\bird.png");
     
+    
     // Draw the main menu to display buttons
-    int startGame = mainMenu();
+    int startGame = mainMenu(exit, play, retry, button);
     
     SetTargetFPS(60);
     while (!WindowShouldClose()) {
+        SetMouseCursor(0);
         BeginDrawing();
         ClearBackground(BLUE);
         DrawTexture(background, 0, 0, RAYWHITE);
         
         if (startGame == 0) {
-            startGame = mainMenu(); //Wait for user to select an option
+            startGame = mainMenu(exit, play, retry, button); //Wait for user to select an option
         }
         else {
             DrawTexture(bird.Texture, bird.position.x - bird.width/2, bird.position.y - bird.height/2, WHITE);
@@ -261,7 +284,7 @@ int main() {
     
             // Game over // Retry and Exit
             if (collision(Top_platforms, Bottom_platforms)) {
-                gameOver(Top_platforms, Bottom_platforms, &score);
+                gameOver(Top_platforms, Bottom_platforms, &score, retry, exit, button);
             }
             
             if ((IsKeyPressed(KEY_SPACE) || IsKeyPressed(KEY_W)) && death != true) {
@@ -276,4 +299,3 @@ int main() {
     CloseWindow();
     return 0;
 }
-    
