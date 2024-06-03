@@ -4,6 +4,8 @@
 const int width = 800;
 const int height = 600;
 
+#define MAX_RAIN 50
+
 bool death = false;
  
 // Bird Properties:
@@ -23,6 +25,14 @@ Bird bird = {
     .Texture = {0} // Initialize texture
 };
 
+typedef struct {
+    Vector2 position;
+    float speed;
+    float windspeed;
+} raindrop;
+
+raindrop rain[MAX_RAIN];
+
 // Platform Properties
 typedef struct Platform {
     int x;
@@ -30,44 +40,6 @@ typedef struct Platform {
     int width;
     int height;
 } Platform;
-
-/*typedef struct Button {
-    Rectangle rect;
-    Color color;
-    Color textcolor;
-    char* text;
-} Button;
-
-struct Button Retry = {
-    .rect = {width/2-125, height/2+50, 130, 50, RED},
-    .color = RED,
-    .textcolor = RAYWHITE,
-    .text = "Retry"
-};
-
-struct Button Exit = {
-    .rect = {width/2+30, height/2+50, 120, 50},
-    .color = RED,
-    .textcolor = RAYWHITE,
-    .text = "Exit"
-};
-
-struct Button Play = {
-    .rect = {width/2-125, height/2+50, 130, 50},
-    .color = RED,
-    .textcolor = RAYWHITE,
-    .text = "Play"
-};*/
-
-//Function Declarations
-/*int mainMenu();
-void Update_platforms(Platform Top_platforms[], Platform Bottom_platforms[]); //Obstacle generation
-int collision(Platform Top_platforms[], Platform Bottom_platforms[]); //Collision detection
-int scoreUpdate(Platform Top_platforms[], int* score); //Score Function
-int gameOver(Platform Top_platforms[], Platform Bottom_platforms[], int* score); // Game over stage
-void retry(Platform Top_platforms[], Platform Bottom_platforms[]); //Retry
-void exitGame(); //Exit
-*/
 
 int mainMenu(Rectangle exit, Rectangle play, Rectangle retry, Texture2D button)
 {
@@ -226,6 +198,13 @@ int main() {
     InitWindow(width, height, "Ball Game");
     InitAudioDevice();
     
+    for(int i = 0; i<MAX_RAIN; i++){
+        rain[i].position.x = GetRandomValue(0, width);
+        rain[i].position.y = GetRandomValue(height, 0);
+        rain[i].speed = (float)GetRandomValue(50, 100) / 100.0f;
+        rain[i].windspeed = (float)GetRandomValue(-50, 50) / 100.0f;
+    }
+    
     int score = 0;
     int highscore = 0;
     
@@ -263,6 +242,17 @@ int main() {
     SetTargetFPS(60);
     int bgmCount = 0;
     while (!WindowShouldClose()) {
+        for (int i = 0; i < MAX_RAIN; i++) {
+            rain[i].position.y += rain[i].speed + GetRandomValue(0, 50);
+            rain[i].position.x += rain[i].windspeed;
+
+            // If a snowdrop reaches the bottom, reset its position to the top
+            if (rain[i].position.y > height) {
+                rain[i].position.y = GetRandomValue(-height, 0);
+                rain[i].position.x = GetRandomValue(0, width);
+            }
+        }
+        
         if(bgmCount == 0){
             PlaySound(bgm);
             bgmCount++;
@@ -276,8 +266,12 @@ int main() {
             startGame = mainMenu(exit, play, retry, button); //Wait for user to select an option
         }
         else {
+            for(int i=1; i<MAX_RAIN; i++){
+                DrawRectangle(rain[i].position.x, rain[i].position.y, 3, 40, (Color){189, 201, 219, 170});
+            }
+            
             DrawTexture(bird.Texture, bird.position.x - bird.width/2, bird.position.y - bird.height/2, WHITE);
-        
+            
             Update_platforms(Top_platforms, Bottom_platforms);
             collision(Top_platforms, Bottom_platforms);
             
