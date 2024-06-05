@@ -4,7 +4,7 @@
 const int width = 800;
 const int height = 600;
 
-#define MAX_RAIN 50
+#define MAX_RAIN 200
 
 bool death = false;
  
@@ -29,6 +29,7 @@ typedef struct {
     Vector2 position;
     float speed;
     float windspeed;
+    int alpha;
 } raindrop;
 
 raindrop rain[MAX_RAIN];
@@ -40,6 +41,11 @@ typedef struct Platform {
     int width;
     int height;
 } Platform;
+
+void exitGame(){
+    EndDrawing();
+    CloseWindow();
+}
 
 int mainMenu(Rectangle exit, Rectangle play, Rectangle retry, Texture2D button)
 {
@@ -129,7 +135,7 @@ int scoreUpdate(Platform Top_platforms[], int* score)
         }
     }
     
-    char scoreText[20]; //Display score
+    char scoreText[20]; //Display score`
     snprintf(scoreText, 20, "Score: %d", *score);
     DrawText(scoreText, 25, 25, 58, WHITE);
     
@@ -189,12 +195,19 @@ void Retry(Platform Top_platforms[], Platform Bottom_platforms[]) {
     }
 }
 
-void exitGame(){
-    EndDrawing();
-    CloseWindow();
-}
-
-int main() {
+int main() 
+{
+    char quotes[5][70] = 
+    {
+        "It's only after we've lost everything that we're free to do anything.",
+        "We accept the love we think we deserve.",
+        "This is your life and it's ending one minute at a time.",
+        "Maybe you're not meant to be complete.",
+        "Look around you, and start thinking.",
+        "We suffer more in imagination than in reality"
+    };
+    float seconds;
+    
     InitWindow(width, height, "Ball Game");
     InitAudioDevice();
     
@@ -203,6 +216,7 @@ int main() {
         rain[i].position.y = GetRandomValue(height, 0);
         rain[i].speed = (float)GetRandomValue(50, 100) / 100.0f;
         rain[i].windspeed = (float)GetRandomValue(-50, 50) / 100.0f;
+        rain[i].alpha = 0;
     }
     
     int score = 0;
@@ -232,7 +246,8 @@ int main() {
     Rectangle retry = {width/2-125, height/2+50, 130, 50};
     
     bird.Texture = LoadTexture("assets\\bird.png");
-    Sound bgm = LoadSound("assets\\bgm.mp3");
+    Music bgm = LoadMusicStream("assets\\bgm.mp3");
+    Music rainSfx = LoadMusicStream("assets\\rainSfx.mp3");
     Sound jump = LoadSound("assets\\jump.wav");
     
     
@@ -240,23 +255,39 @@ int main() {
     int startGame = mainMenu(exit, play, retry, button);
     
     SetTargetFPS(60);
-    int bgmCount = 0;
+    
+    PlayMusicStream(bgm);
+    PlayMusicStream(rainSfx);
+    SetMusicVolume(rainSfx, 0.7);
+    
+    float lastPrint = 0.0;
+    int flag=0;
+    
     while (!WindowShouldClose()) {
+        seconds = GetTime();
+        if(flag == 1){
+            DrawText("Example", width/2, height/2, 24, RED);
+        }
+        if(seconds - lastPrint >= 15.0){
+            lastPrint = seconds;
+            flag = 1;
+        }
+        
+        UpdateMusicStream(bgm);
+        UpdateMusicStream(rainSfx);
+        rainSfx.looping = true;
+        
         for (int i = 0; i < MAX_RAIN; i++) {
-            rain[i].position.y += rain[i].speed + GetRandomValue(0, 50);
+            rain[i].position.y += rain[i].speed + GetRandomValue(0, 20);
             rain[i].position.x += rain[i].windspeed;
 
-            // If a snowdrop reaches the bottom, reset its position to the top
+            // Reset raindrop's position
             if (rain[i].position.y > height) {
                 rain[i].position.y = GetRandomValue(-height, 0);
                 rain[i].position.x = GetRandomValue(0, width);
             }
-        }
+        }   
         
-        if(bgmCount == 0){
-            PlaySound(bgm);
-            bgmCount++;
-        }
         SetMouseCursor(0);
         BeginDrawing();
         ClearBackground(BLUE);
@@ -267,7 +298,13 @@ int main() {
         }
         else {
             for(int i=1; i<MAX_RAIN; i++){
-                DrawRectangle(rain[i].position.x, rain[i].position.y, 3, 40, (Color){189, 201, 219, 170});
+                if (rain[i].alpha < 200) {
+                    rain[i].alpha += 1;  // Adjust the increment value as needed
+                    if (rain[i].alpha > 200) {
+                        rain[i].alpha = 200;  // Cap the alpha value at 255
+                    }
+            }
+                DrawRectangle(rain[i].position.x, rain[i].position.y, 1, 40, (Color){189, 201, 219, rain[i].alpha});
             }
             
             DrawTexture(bird.Texture, bird.position.x - bird.width/2, bird.position.y - bird.height/2, WHITE);
