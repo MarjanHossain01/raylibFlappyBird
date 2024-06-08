@@ -183,12 +183,12 @@ void generateQuote(char quotes[][75], int* check, int* count, int* alpha) {
     int textWidth = MeasureText(quotes[*count], 20); // Measure the text width
     int xPos = (width - textWidth) / 2; // Calculate the centered x position
     
-    DrawText(quotes[*count], xPos, height / 2, 20, (Color){200, 0, 0, (*alpha)});
+    DrawText(quotes[*count], xPos, height / 2, 20, (Color){255, 0, 0, (*alpha)});
     
     (*check)++;
-    if (*check < 200) {
+    if (*check < 255) {
         (*alpha)++;
-    } else if (*check >= 200) {
+    } else if (*check >= 255) {
         (*alpha)--;
     }
     if (*check >= 510) {
