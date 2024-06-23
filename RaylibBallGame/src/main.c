@@ -64,7 +64,10 @@ int mainMenu(Rectangle exit, Rectangle play, Rectangle retry, Texture2D button) 
             return 1;
         }
     }
-
+    
+    if (IsKeyPressed(KEY_SPACE)){
+        return 1;
+    }
     if (CheckCollisionPointRec(GetMousePosition(), exit)) {
         SetMouseCursor(4);
         if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
@@ -180,20 +183,24 @@ void Retry(Platform topPlatforms[], Platform bottomPlatforms[]) {
 }
 
 void generateQuote(char quotes[][75], int* check, int* count, int* alpha) {
-    int textWidth = MeasureText(quotes[*count], 20); // Measure the text width
-    int xPos = (width - textWidth) / 2; // Calculate the centered x position
+    int textWidth = MeasureText(quotes[*count], 20); // Text width
+    int xPos = (width - textWidth) / 2; // Centered x position
     
     DrawText(quotes[*count], xPos, height / 2, 20, (Color){255, 0, 0, (*alpha)});
-    
     (*check)++;
+    
     if (*check < 255) {
         (*alpha)++;
-    } else if (*check >= 255) {
+        if (*alpha > 255) *alpha = 255;
+    } 
+    else if(*check > 1){
         (*alpha)--;
+        if (*alpha < 0) *alpha = 0;
     }
+    
     if (*check >= 510) {
-        (*count)++;
         (*check) = 0;
+        (*count)++;
     }
 }
 
