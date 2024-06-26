@@ -52,14 +52,14 @@ int mainMenu(Rectangle exit, Rectangle play, Rectangle retry, Texture2D button) 
 
     DrawTexture(button, width / 2 - 125, height / 2 + 50, WHITE);
     DrawRectangleRec(play, BLANK);
-    DrawText("Play", width / 2 - 90, play.y + play.height / 2 - 10, 20, WHITE);
+    DrawText("Play", width / 2 - 90, play.y + play.height / 2 - 10, 20, BLACK);
 
     DrawTexture(button, width / 2 + 30, height / 2 + 50, WHITE);
     DrawRectangleRec(exit, BLANK);
-    DrawText("Exit", width / 2 + 70, exit.y + exit.height / 2 - 10, 20, WHITE);
+    DrawText("Exit", width / 2 + 70, exit.y + exit.height / 2 - 10, 20, BLACK);
 
     if (CheckCollisionPointRec(GetMousePosition(), play)) {
-        SetMouseCursor(4);
+        SetMouseCursor(4); 
         if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
             return 1;
         }
@@ -150,11 +150,11 @@ void gameOver(Platform topPlatforms[], Platform bottomPlatforms[], int* score, R
     DrawText("Game Over!", 250, 250, 62, RAYWHITE);
     DrawTexture(button, width / 2 - 125, height / 2 + 50, WHITE);
     DrawRectangleRec(retry, BLANK);
-    DrawText("Retry", width / 2 - 95, retry.y + retry.height / 2 - 10, 20, WHITE);
+    DrawText("Retry", width / 2 - 95, retry.y + retry.height / 2 - 10, 20, BLACK);
 
     DrawTexture(button, width / 2 + 30, height / 2 + 50, WHITE);
     DrawRectangleRec(exit, BLANK);
-    DrawText("Exit", width / 2 + 70, exit.y + exit.height / 2 - 10, 20, WHITE);
+    DrawText("Exit", width / 2 + 70, exit.y + exit.height / 2 - 10, 20, BLACK);
 
     if (CheckCollisionPointRec(GetMousePosition(), retry)) {
         SetMouseCursor(4);
@@ -213,7 +213,7 @@ int main() {
         "Look around you, and start thinking.",
         "We suffer more in imagination than in reality.",
         "Your Success makes your identity,",
-        "your failure make you stronger.",
+        "your Failure makes you stronger.",
         "There's an odd comfort in realizing you've lost, there's a victory in that."
     };
     float seconds;
