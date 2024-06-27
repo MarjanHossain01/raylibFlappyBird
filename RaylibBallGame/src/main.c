@@ -54,7 +54,7 @@ int mainMenu(Rectangle exit, Rectangle play, Rectangle retry, Texture2D button) 
     DrawRectangleRec(play, BLANK);
     DrawText("Play", width / 2 - 90, play.y + play.height / 2 - 10, 20, BLACK);
 
-    DrawTexture(button, width / 2 + 30, height / 2 + 50, WHITE);
+    DrawTexture(button, width / 2 + 30, height / 2 + 50, (Color){222, 222, 222, 255} );
     DrawRectangleRec(exit, BLANK);
     DrawText("Exit", width / 2 + 70, exit.y + exit.height / 2 - 10, 20, BLACK);
 
@@ -80,11 +80,11 @@ int mainMenu(Rectangle exit, Rectangle play, Rectangle retry, Texture2D button) 
 
 void UpdatePlatforms(Platform topPlatforms[], Platform bottomPlatforms[]) {
     for (int i = 0; i < 4; i++) {
-        DrawRectangle(topPlatforms[i].x, topPlatforms[i].y, topPlatforms[i].width, topPlatforms[i].height, GREEN);
+        DrawRectangle(topPlatforms[i].x, topPlatforms[i].y, topPlatforms[i].width, topPlatforms[i].height, (Color){128, 128, 128, 255});
         if (topPlatforms[i].x + topPlatforms[i].width < 0) {
             topPlatforms[i].x = 820;
         }
-        DrawRectangle(bottomPlatforms[i].x, 450, bottomPlatforms[i].width, 150, WHITE);
+        DrawRectangle(bottomPlatforms[i].x, 450, bottomPlatforms[i].width, 150, (Color){33, 33, 33, 255});
         if (bottomPlatforms[i].x + bottomPlatforms[i].width < 0) {
             bottomPlatforms[i].x = 820;
         }
@@ -254,7 +254,7 @@ int main() {
     // Assets
     Texture2D background = LoadTexture("assets/background.png");
     Texture2D button = LoadTexture("assets/Texture.png");
-
+    
     Rectangle play = {width / 2 - 125, height / 2 + 50, 130, 50};
     Rectangle exit = {width / 2 + 30, height / 2 + 50, 120, 50};
     Rectangle retry = {width / 2 - 125, height / 2 + 50, 130, 50};
@@ -262,6 +262,10 @@ int main() {
     bird.texture = LoadTexture("assets/bird.png");
     Music bgm = LoadMusicStream("assets/bgm.mp3");
     Music rainSfx = LoadMusicStream("assets/rainSfx.mp3");
+    
+    Sound thunder1 = LoadSound("assets/thunder1.mp3");
+    Sound thunder2 = LoadSound("assets/thunder2.mp3");
+    Sound thunder3 = LoadSound("assets/thunder3.mp3");
     Sound jump = LoadSound("assets/jump.wav");
 
     // Draw the main menu to display buttons
@@ -275,12 +279,27 @@ int main() {
 
     float lastPrint = 0.0;
     int flag = 0;
+    int timer;
 
     while (!WindowShouldClose()) {
         seconds = GetTime();
+        timer = GetTime();
+        
         if (seconds - lastPrint >= 15.0) {
             lastPrint = seconds;
             flag = 1;
+        }
+        if( (int)timer%5 == 0){
+            SetSoundVolume(thunder1, 5.0);
+            PlaySound(thunder1);
+        }
+        if( (int)timer%6 == 0){
+            SetSoundVolume(thunder2, 5.0);
+            PlaySound(thunder2);
+        }
+        if( (int)timer%7 == 0){
+            SetSoundVolume(thunder3, 5.0);
+            PlaySound(thunder3);
         }
 
         UpdateMusicStream(bgm);
